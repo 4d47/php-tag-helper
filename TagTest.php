@@ -52,7 +52,8 @@ class TagTest extends PHPUnit_Framework_TestCase
 
     function testFunctionFrontendAcceptTagNameAsFirstArgument()
     {
-        $this->assertTrue(is_a(tag('a'), Tag));
+        $this->assertTrue(tag('a') instanceof Tag);
+        $this->assertEquals('', tag());
         $this->assertEquals('<test />', tag('test'));
         $this->assertEquals('<test>again</test>', tag('test', 'again'));
     }

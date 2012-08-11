@@ -65,7 +65,11 @@ function tag()
         $tag = new Tag();
     }
     $args = func_get_args();
-    $fn = array($tag, array_shift($args));
-    return call_user_func_array($fn, $args);
+    if (empty($args)) {
+        return $tag;
+    } else {
+        $fn = array($tag, array_shift($args));
+        return call_user_func_array($fn, $args);
+    }
 }
 
