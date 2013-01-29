@@ -5,6 +5,7 @@
  */
 class Tag
 {
+    public static $selfClosingMarker = ' /';
     protected $value;
 
     function __construct($value = '')
@@ -19,6 +20,7 @@ class Tag
 
     function __call($name, $args)
     {
+        $selfClosingMarker = self::$selfClosingMarker;
         $class = get_class($this);
 
         $w = strpos($name, ' ');
@@ -48,7 +50,7 @@ class Tag
         if (strpos($name, 'begin_') === 0) {
             return new $class($this->value . '<' . substr($name, 6) . $attrs . '>');
         } else if (empty($args)) {
-            return new $class($this->value . "<$name$attrs />");
+            return new $class($this->value . "<$name$attrs$selfClosingMarker>");
         } else {
             return new $class($this->value . "<$name$attrs>" . implode(' ', $args) . "</$name>");
         }

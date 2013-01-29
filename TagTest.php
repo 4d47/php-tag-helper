@@ -3,8 +3,16 @@ require_once 'Tag.php';
 
 class TagTest extends PHPUnit_Framework_TestCase
 {
+    private static $defaultSelfClosingMarker;
+
+    static function setUpBeforeClass()
+    {
+        self::$defaultSelfClosingMarker = Tag::$selfClosingMarker;
+    }
+
     function setUp()
     {
+        Tag::$selfClosingMarker = self::$defaultSelfClosingMarker;
         $this->tag = new Tag();
     }
 
@@ -63,6 +71,12 @@ class TagTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<test baz />', tag('test baz'));
         $this->assertEquals('<test class="bob" />', tag('test class="bob"'));
         $this->assertEquals('<test class="bob">1 &amp; 2</test>', tag('test class="bob"', '1 & 2'));
+    }
+
+    function testSelfClosingMarkerOption()
+    {
+        Tag::$selfClosingMarker = '';
+        $this->assertEquals('<img src="a.jpg">', tag('img', array('src' => 'a.jpg')));
     }
 }
 
