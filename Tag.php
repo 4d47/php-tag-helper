@@ -8,17 +8,17 @@ class Tag
     public static $selfClosingMarker = ' /';
     protected $value;
 
-    function __construct($value = '')
+    public function __construct($value = '')
     {
         $this->value = (string) $value;
     }
 
-    function __toString()
+    public function __toString()
     {
         return $this->value;
     }
 
-    function __call($name, $args)
+    public function __call($name, $args)
     {
         $selfClosingMarker = self::$selfClosingMarker;
         $class = get_class($this);
