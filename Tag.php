@@ -21,54 +21,58 @@ class Tag
         return $this->value;
     }
 
+    public static function __callStatic($name, $args)
+    {
+        $class = get_called_class();
+        $self = new $class();
+        return call_user_func_array(array($self, $name), $args);
+    }
+
     public function __call($name, $args)
     {
+        # lots of complicated code ...
         $class = get_class($this);
 
-        $w = strpos($name, ' ');
-        if (is_int($w)) {
-            # name contains literal attributes
-            $attrs = substr($name, $w);
-            $name = substr($name, 0, $w);
+        # read attributes possibly embeded in the $name
+        $pos = strpos($name, ' ');
+        if (is_int($pos)) {
+            $attr = substr($name, $pos);
+            $name = substr($name, 0, $pos);
         } else {
-            $attrs = '';
+            $attr = '';
         }
 
-        if (strpos($name, 'end_') === 0) {
-            return new $class($this->value . '</' . substr($name, 4) .'>');
-        }
-
-        $a = (!empty($args) and is_array($args[0])) ? array_shift($args) : array();
-
-        foreach ($a as $k => $v) {
+        # convert attributes to properly escaped string
+        $attrs = (!empty($args) && is_array($args[0])) ? array_shift($args) : array();
+        foreach ($attrs as $k => $v) {
             if (in_array($k, $class::$booleanAttributes)) {
                 if ($v) {
-                   $attrs .= $class::$selfClosingMarker ? " $k=\"$k\"" : " $k";
+                   $attr .= $class::$selfClosingMarker ? " $k=\"$k\"" : " $k";
                 }
             } else {
-                $attrs .= sprintf(' %s="%s"', $k, htmlspecialchars($v));
+                $attr .= sprintf(' %s="%s"', $k, htmlspecialchars($v));
             }
         }
+
+        # escape tag content
         foreach ($args as &$c) {
             if (! $c instanceof Tag) {
                 $c = htmlspecialchars($c);
             }
         }
 
-        if (strpos($name, 'begin_') === 0) {
-            return new $class($this->value . '<' . substr($name, 6) . $attrs . '>');
+        # construct tag string from $name, $attr and $args
+        if (0 === strpos($name, 'end_')) {
+            $tag = '</' . substr($name, 4) .'>';
+        } else if (0 === strpos($name, 'begin_')) {
+            $tag = '<' . substr($name, 6) . $attr . '>';
         } else if (in_array($name, $class::$voidElements)) {
-            return new $class($this->value . "<$name$attrs{$class::$selfClosingMarker}>");
+            $tag = "<$name$attr{$class::$selfClosingMarker}>";
         } else {
-            return new $class($this->value . "<$name$attrs>" . implode(' ', $args) . "</$name>");
+            $tag = "<$name$attr>" . implode(' ', $args) . "</$name>";
         }
-    }
 
-    public static function __callStatic($name, $args)
-    {
-        $class = get_called_class();
-        $self = new $class();
-        return call_user_func_array(array($self, $name), $args);
+        return new $class($this->value . $tag);
     }
 }
 
@@ -85,8 +89,8 @@ function tag()
     if (empty($args)) {
         return $tag;
     } else {
-        $fn = array($tag, array_shift($args));
-        return call_user_func_array($fn, $args);
+        $callback = array($tag, array_shift($args));
+        return call_user_func_array($callback, $args);
     }
 }
 
