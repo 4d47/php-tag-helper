@@ -30,6 +30,12 @@ class TagTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<p>foo</p>', $this->tag->p(array(), 'foo'));
     }
 
+    public function testBooleanAttributes()
+    {
+        $this->assertEquals('<input disabled>', $this->tag->input(array('disabled' => true)));
+        $this->assertEquals('<input>', $this->tag->input(array('disabled' => false)));
+    }
+
     public function testVoidElementsIgnoreThereInnerContent()
     {
         $this->assertEquals('<img>', $this->tag->img('should', 'ignore'));
@@ -90,20 +96,32 @@ class TagTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<p></p>', tag('p'));
     }
 
+    public function testBooleanAttributesOption()
+    {
+        $this->assertEquals('<input disabled>', tag('input', array('disabled' => true)));
+        Tag::$booleanAttributes[] = 'a';
+        $this->assertEquals('<input a>', tag('input', array('a' => true)));
+        Tag::$selfClosingMarker = ' /';
+        $this->assertEquals('<input disabled="disabled" />', tag('input', array('disabled' => true)));
+    }
+
     public function setUp()
     {
         $this->tag = new Tag();
         Tag::$selfClosingMarker = self::$defaultSelfClosingMarker;
         Tag::$voidElements = self::$defaultVoidElements;
+        Tag::$booleanAttributes = self::$defaultBooleanAttributes;
     }
 
     public static function setUpBeforeClass()
     {
         self::$defaultSelfClosingMarker = Tag::$selfClosingMarker;
         self::$defaultVoidElements = Tag::$voidElements;
+        self::$defaultBooleanAttributes = Tag::$booleanAttributes;
     }
 
     private static $defaultSelfClosingMarker;
     private static $defaultVoidElements;
+    private static $defaultBooleanAttributes;
 }
 

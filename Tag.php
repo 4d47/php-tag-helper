@@ -7,6 +7,7 @@ class Tag
 {
     public static $selfClosingMarker = '';
     public static $voidElements = array('area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr');
+    public static $booleanAttributes = array('async', 'checked', 'compact', 'declare', 'defer', 'disabled', 'ismap', 'multiple', 'noresize', 'noshade', 'nowrap', 'open', 'readonly', 'required', 'reversed', 'scoped', 'selected');
 
     protected $value;
 
@@ -23,7 +24,6 @@ class Tag
     public function __call($name, $args)
     {
         $class = get_class($this);
-        $selfClosingMarker = $class::$selfClosingMarker;
 
         $w = strpos($name, ' ');
         if (is_int($w)) {
@@ -41,7 +41,13 @@ class Tag
         $a = (!empty($args) and is_array($args[0])) ? array_shift($args) : array();
 
         foreach ($a as $k => $v) {
-            $attrs .= sprintf(' %s="%s"', $k, htmlspecialchars($v));
+            if (in_array($k, $class::$booleanAttributes)) {
+                if ($v) {
+                   $attrs .= $class::$selfClosingMarker ? " $k=\"$k\"" : " $k";
+                }
+            } else {
+                $attrs .= sprintf(' %s="%s"', $k, htmlspecialchars($v));
+            }
         }
         foreach ($args as &$c) {
             if (! $c instanceof Tag) {
@@ -51,8 +57,8 @@ class Tag
 
         if (strpos($name, 'begin_') === 0) {
             return new $class($this->value . '<' . substr($name, 6) . $attrs . '>');
-        } else if (is_null($class::$voidElements) || array_search($name, $class::$voidElements) !== false) {
-            return new $class($this->value . "<$name$attrs$selfClosingMarker>");
+        } else if (in_array($name, $class::$voidElements)) {
+            return new $class($this->value . "<$name$attrs{$class::$selfClosingMarker}>");
         } else {
             return new $class($this->value . "<$name$attrs>" . implode(' ', $args) . "</$name>");
         }
