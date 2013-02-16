@@ -5,7 +5,9 @@
  */
 class Tag
 {
-    public static $selfClosingMarker = ' /';
+    public static $selfClosingMarker = '';
+    public static $voidElements = array('area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr');
+
     protected $value;
 
     public function __construct($value = '')
@@ -20,8 +22,8 @@ class Tag
 
     public function __call($name, $args)
     {
-        $selfClosingMarker = self::$selfClosingMarker;
         $class = get_class($this);
+        $selfClosingMarker = $class::$selfClosingMarker;
 
         $w = strpos($name, ' ');
         if (is_int($w)) {
@@ -49,11 +51,18 @@ class Tag
 
         if (strpos($name, 'begin_') === 0) {
             return new $class($this->value . '<' . substr($name, 6) . $attrs . '>');
-        } else if (empty($args)) {
+        } else if (is_null($class::$voidElements) || array_search($name, $class::$voidElements) !== false) {
             return new $class($this->value . "<$name$attrs$selfClosingMarker>");
         } else {
             return new $class($this->value . "<$name$attrs>" . implode(' ', $args) . "</$name>");
         }
+    }
+
+    public static function __callStatic($name, $args)
+    {
+        $class = get_called_class();
+        $self = new $class();
+        return call_user_func_array(array($self, $name), $args);
     }
 }
 
