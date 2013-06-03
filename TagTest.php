@@ -77,11 +77,11 @@ class TagTest extends PHPUnit_Framework_TestCase
 
     public function testStaticCallFrontend()
     {
-        $this->assertEquals('<b>hello</b>', tag::b('hello'));
-        $this->assertEquals('<form action="." method="POST">', tag::begin_form(array('action' => '.', 'method' => 'POST')));
+        $this->assertEquals('<b>hello</b>', Tag::b('hello'));
+        $this->assertEquals('<form action="." method="POST">', Tag::begin_form(array('action' => '.', 'method' => 'POST')));
     }
 
-    public function testVoidElementsConfiguration()
+    public function testVoidElementsOption()
     {
         $this->assertEquals('<p></p>', tag('p'));
         Tag::$voidElements[] = 'p';
@@ -99,6 +99,7 @@ class TagTest extends PHPUnit_Framework_TestCase
     public function testBooleanAttributesOption()
     {
         $this->assertEquals('<input disabled>', tag('input', array('disabled' => true)));
+        $this->assertEquals('<input a="1">', tag('input', array('a' => true)));
         Tag::$booleanAttributes[] = 'a';
         $this->assertEquals('<input a>', tag('input', array('a' => true)));
         Tag::$selfClosingMarker = ' /';

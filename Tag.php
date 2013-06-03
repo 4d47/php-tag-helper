@@ -3,13 +3,13 @@
 /**
  * Tag string generator (Engineered for making soup)
  */
-class Tag
+final class Tag
 {
     public static $selfClosingMarker = '';
     public static $voidElements = array('area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr');
     public static $booleanAttributes = array('async', 'checked', 'compact', 'declare', 'defer', 'disabled', 'ismap', 'multiple', 'noresize', 'noshade', 'nowrap', 'open', 'readonly', 'required', 'reversed', 'scoped', 'selected');
 
-    protected $value;
+    private $value;
 
     public function __construct($value = '')
     {
@@ -23,16 +23,11 @@ class Tag
 
     public static function __callStatic($name, $args)
     {
-        $class = get_called_class();
-        $self = new $class();
-        return call_user_func_array(array($self, $name), $args);
+        return call_user_func_array(array(new Tag(), $name), $args);
     }
 
     public function __call($name, $args)
     {
-        # lots of complicated code ...
-        $class = get_class($this);
-
         # read attributes possibly embeded in the $name
         $pos = strpos($name, ' ');
         if (is_int($pos)) {
@@ -45,9 +40,9 @@ class Tag
         # convert attributes to properly escaped string
         $attrs = (!empty($args) && is_array($args[0])) ? array_shift($args) : array();
         foreach ($attrs as $k => $v) {
-            if (in_array($k, $class::$booleanAttributes)) {
+            if (in_array($k, Tag::$booleanAttributes)) {
                 if ($v) {
-                   $attr .= $class::$selfClosingMarker ? " $k=\"$k\"" : " $k";
+                   $attr .= Tag::$selfClosingMarker ? " $k=\"$k\"" : " $k";
                 }
             } else {
                 $attr .= sprintf(' %s="%s"', $k, htmlspecialchars($v));
@@ -66,13 +61,13 @@ class Tag
             $tag = '</' . substr($name, 4) .'>';
         } else if (0 === strpos($name, 'begin_')) {
             $tag = '<' . substr($name, 6) . $attr . '>';
-        } else if (in_array($name, $class::$voidElements)) {
-            $tag = "<$name$attr{$class::$selfClosingMarker}>";
+        } else if (in_array($name, Tag::$voidElements)) {
+            $tag = "<$name$attr" . Tag::$selfClosingMarker . ">";
         } else {
             $tag = "<$name$attr>" . implode(' ', $args) . "</$name>";
         }
 
-        return new $class($this->value . $tag);
+        return new Tag($this->value . $tag);
     }
 }
 
