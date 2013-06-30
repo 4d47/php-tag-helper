@@ -49,6 +49,9 @@ final class Tag
             }
         }
 
+        # flatten content
+        $args = $this->flatten($args);
+
         # escape tag content
         foreach ($args as &$c) {
             if (! $c instanceof Tag) {
@@ -68,6 +71,16 @@ final class Tag
         }
 
         return new Tag($this->value . $tag);
+    }
+
+    private static function flatten($array)
+    {
+        return array_reduce($array, array('Tag', 'flat'), array());
+    }
+
+    private static function flat(&$result, $item)
+    {
+        return array_merge($result, is_array($item) ? array_values($item) : array($item));
     }
 }
 

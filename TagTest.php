@@ -106,6 +106,13 @@ class TagTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input disabled="disabled" />', tag('input', array('disabled' => true)));
     }
 
+    public function testArrayContentIsFlatten()
+    {
+        $data = array('a', 'b', 'c');
+        $this->assertEquals('<ul id="abc"><li>a</li> <li>b</li> <li>c</li></ul>',
+            tag('ul', array('id' => 'abc'), array_map(array('Tag', 'li'), $data)));
+    }
+
     public function setUp()
     {
         $this->tag = new Tag();
