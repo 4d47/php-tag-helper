@@ -3,7 +3,7 @@
 /**
  * Tag string generator (Engineered for making soup)
  */
-final class Tag
+final class tag
 {
     public static $selfClosingMarker = '';
     public static $voidElements = array('area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr');
@@ -23,7 +23,7 @@ final class Tag
 
     public static function __callStatic($name, $args)
     {
-        return call_user_func_array(array(new Tag(), $name), $args);
+        return call_user_func_array(array(new tag(), $name), $args);
     }
 
     public function __call($name, $args)
@@ -40,9 +40,9 @@ final class Tag
         # convert attributes to properly escaped string
         $attrs = (!empty($args) && is_array($args[0])) ? array_shift($args) : array();
         foreach ($attrs as $k => $v) {
-            if (in_array($k, Tag::$booleanAttributes)) {
+            if (in_array($k, tag::$booleanAttributes)) {
                 if ($v) {
-                   $attr .= Tag::$selfClosingMarker ? " $k=\"$k\"" : " $k";
+                   $attr .= tag::$selfClosingMarker ? " $k=\"$k\"" : " $k";
                 }
             } else {
                 $attr .= sprintf(' %s="%s"', $k, htmlspecialchars($v));
@@ -54,7 +54,7 @@ final class Tag
 
         # escape tag content
         foreach ($args as &$c) {
-            if (! $c instanceof Tag) {
+            if (! $c instanceof tag) {
                 $c = htmlspecialchars($c);
             }
         }
@@ -64,18 +64,18 @@ final class Tag
             $tag = '</' . substr($name, 4) .'>';
         } else if (0 === strpos($name, 'begin_')) {
             $tag = '<' . substr($name, 6) . $attr . '>';
-        } else if (in_array($name, Tag::$voidElements)) {
-            $tag = "<$name$attr" . Tag::$selfClosingMarker . ">";
+        } else if (in_array($name, tag::$voidElements)) {
+            $tag = "<$name$attr" . tag::$selfClosingMarker . ">";
         } else {
             $tag = "<$name$attr>" . implode(' ', $args) . "</$name>";
         }
 
-        return new Tag($this->value . $tag);
+        return new tag($this->value . $tag);
     }
 
     private static function flatten($array)
     {
-        return array_reduce($array, array('Tag', 'flat'), array());
+        return array_reduce($array, array('tag', 'flat'), array());
     }
 
     private static function flat(&$result, $item)
@@ -91,7 +91,7 @@ function tag()
 {
     static $tag;
     if (is_null($tag)) {
-        $tag = new Tag();
+        $tag = new tag();
     }
     $args = func_get_args();
     if (empty($args)) {
