@@ -3,5 +3,5 @@
     "type": "library",
     "description": "Tag string generator (Engineered for making soup)",
     "require": { "php": ">=5.3.0" },
-    "autoload": { "files": [ "Tag.php" ] }
+    "autoload": { "psr-0": { "Tag": "" } }
 }
