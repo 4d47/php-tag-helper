@@ -28,16 +28,8 @@ final class tag
 
     public function __call($name, $args)
     {
-        # read attributes possibly embeded in the $name
-        $pos = strpos($name, ' ');
-        if (is_int($pos)) {
-            $attr = substr($name, $pos);
-            $name = substr($name, 0, $pos);
-        } else {
-            $attr = '';
-        }
-
         # convert attributes to properly escaped string
+        $attr = '';
         $attrs = (!empty($args) && is_array($args[0])) ? array_shift($args) : array();
         foreach ($attrs as $k => $v) {
             if (in_array($k, tag::$booleanAttributes)) {
@@ -83,22 +75,3 @@ final class tag
         return array_merge($result, is_array($item) ? array_values($item) : array($item));
     }
 }
-
-/**
- * Tag function front end.
- */
-function tag()
-{
-    static $tag;
-    if (is_null($tag)) {
-        $tag = new tag();
-    }
-    $args = func_get_args();
-    if (empty($args)) {
-        return $tag;
-    } else {
-        $callback = array($tag, array_shift($args));
-        return call_user_func_array($callback, $args);
-    }
-}
-
