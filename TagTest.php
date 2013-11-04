@@ -60,21 +60,6 @@ class TagTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<div><br><br><br></div>', $this->tag->div($this->tag->br()->br()->br()));
     }
 
-    public function testFunctionFrontendAcceptTagNameAsTheFirstArgument()
-    {
-        $this->assertEquals('<br>', tag('br'));
-        $this->assertEquals('<p class="a">again</p>', tag('p', array('class' => 'a'), 'again'));
-        $this->assertTrue(tag('a') instanceof tag);
-        $this->assertEquals('', tag());
-    }
-
-    public function testFunctionFrontendAcceptInliningAttributesWithTagName()
-    {
-        $this->assertEquals('<input checked>', tag('input checked'));
-        $this->assertEquals('<hr class="bob">', tag('hr class="bob"'));
-        $this->assertEquals('<p class="bob">1 &amp; 2</p>', tag('p class="bob"', '1 & 2'));
-    }
-
     public function testStaticCallFrontend()
     {
         $this->assertEquals('<b>hello</b>', tag::b('hello'));
@@ -83,34 +68,34 @@ class TagTest extends PHPUnit_Framework_TestCase
 
     public function testVoidElementsOption()
     {
-        $this->assertEquals('<p></p>', tag('p'));
+        $this->assertEquals('<p></p>', tag::p());
         tag::$voidElements[] = 'p';
-        $this->assertEquals('<p>', tag('p'));
+        $this->assertEquals('<p>', tag::p());
     }
 
     public function testSelfClosingMarkerOption()
     {
         tag::$selfClosingMarker = ' /'; # going back to the xhtml days
-        $this->assertEquals('<br />', tag('br'));
-        $this->assertEquals('<img src="a.jpg" />', tag('img', array('src' => 'a.jpg')));
-        $this->assertEquals('<p></p>', tag('p'));
+        $this->assertEquals('<br />', tag::br());
+        $this->assertEquals('<img src="a.jpg" />', tag::img(array('src' => 'a.jpg')));
+        $this->assertEquals('<p></p>', tag::p());
     }
 
     public function testBooleanAttributesOption()
     {
-        $this->assertEquals('<input disabled>', tag('input', array('disabled' => true)));
-        $this->assertEquals('<input a="1">', tag('input', array('a' => true)));
+        $this->assertEquals('<input disabled>', tag::input(array('disabled' => true)));
+        $this->assertEquals('<input a="1">', tag::input(array('a' => true)));
         tag::$booleanAttributes[] = 'a';
-        $this->assertEquals('<input a>', tag('input', array('a' => true)));
+        $this->assertEquals('<input a>', tag::input(array('a' => true)));
         tag::$selfClosingMarker = ' /';
-        $this->assertEquals('<input disabled="disabled" />', tag('input', array('disabled' => true)));
+        $this->assertEquals('<input disabled="disabled" />', tag::input(array('disabled' => true)));
     }
 
     public function testArrayContentIsFlatten()
     {
         $data = array('a', 'b', 'c');
         $this->assertEquals('<ul id="abc"><li>a</li> <li>b</li> <li>c</li></ul>',
-            tag('ul', array('id' => 'abc'), array_map(array('tag', 'li'), $data)));
+            tag::ul(array('id' => 'abc'), array_map(array('tag', 'li'), $data)));
     }
 
     public function setUp()
