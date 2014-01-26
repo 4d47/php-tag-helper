@@ -68,7 +68,7 @@ final class tag
 
     private static function escape($string)
     {
-        return htmlspecialchars($string, ENT_COMPAT | ENT_HTML401, tag::$encoding);
+        return htmlspecialchars($string, ENT_COMPAT, tag::$encoding);
     }
     
     private static function flatten($array)
