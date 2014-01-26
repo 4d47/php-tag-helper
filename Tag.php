@@ -8,6 +8,7 @@ final class tag
     public static $selfClosingMarker = '';
     public static $voidElements = array('area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr');
     public static $booleanAttributes = array('async', 'checked', 'compact', 'declare', 'defer', 'disabled', 'ismap', 'multiple', 'noresize', 'noshade', 'nowrap', 'open', 'readonly', 'required', 'reversed', 'scoped', 'selected');
+    public static $encoding = 'UTF-8';
 
     private $value;
 
@@ -37,7 +38,7 @@ final class tag
                    $attr .= tag::$selfClosingMarker ? " $k=\"$k\"" : " $k";
                 }
             } else {
-                $attr .= sprintf(' %s="%s"', $k, htmlspecialchars($v));
+                $attr .= sprintf(' %s="%s"', $k, tag::escape($v));
             }
         }
 
@@ -47,7 +48,7 @@ final class tag
         # escape tag content
         foreach ($args as &$c) {
             if (! $c instanceof tag) {
-                $c = htmlspecialchars($c);
+                $c = tag::escape($c);
             }
         }
 
@@ -65,6 +66,11 @@ final class tag
         return new tag($this->value . $tag);
     }
 
+    private static function escape($string)
+    {
+        return htmlspecialchars($string, ENT_COMPAT | ENT_HTML401, tag::$encoding);
+    }
+    
     private static function flatten($array)
     {
         return array_reduce($array, array('tag', 'flat'), array());
