@@ -42,7 +42,7 @@ final class tag
         }
 
         # flatten content
-        $args = $this->flatten($args);
+        $args = tag::flatten($args);
 
         # escape tag content
         foreach ($args as &$c) {
