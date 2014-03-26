@@ -1,4 +1,3 @@
-
 php-tag-helper
 ==============
 
@@ -7,7 +6,7 @@ With automatic escaping and without string concatenations, `printf`
 or HTML/PHP switching.
 
     <?=
-    tag::a(array('href' => $url, 'title' => $title), tag::b($name))->br();
+    tag::a(['href' => $url, 'title' => $title], tag::b($name))->br();
     ?>
 
 There is no documentation but install with `composer require 4d47/tag v1.0` and refer to [the tests](https://github.com/4d47/php-tag-helper/blob/master/TagTest.php) for usage.
