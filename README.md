@@ -9,4 +9,4 @@ or HTML/PHP switching.
     tag::a(['href' => $url, 'title' => $title], tag::b($name))->br();
     ?>
 
-There is no documentation but install with `composer require 4d47/tag v1.0` and refer to [the tests](https://github.com/4d47/php-tag-helper/blob/master/TagTest.php) for usage.
+There is no documentation but install with `composer require 4d47/tag ~2.0` and refer to [the tests](https://github.com/4d47/php-tag-helper/blob/master/TagTest.php) for usage.
