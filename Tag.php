@@ -3,7 +3,7 @@
 /**
  * Tag string generator (Engineered for making soup)
  */
-final class tag
+final class Tag
 {
     public static $selfClosingMarker = '';
     public static $voidElements = array('area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr');
@@ -24,7 +24,7 @@ final class tag
 
     public static function __callStatic($name, $args)
     {
-        return call_user_func_array(array(new tag(), $name), $args);
+        return call_user_func_array(array(new Tag(), $name), $args);
     }
 
     public function __call($name, $args)
@@ -33,22 +33,22 @@ final class tag
         $attr = '';
         $attrs = (!empty($args) && is_array($args[0])) ? array_shift($args) : array();
         foreach ($attrs as $k => $v) {
-            if (in_array($k, tag::$booleanAttributes)) {
+            if (in_array($k, self::$booleanAttributes)) {
                 if ($v) {
-                   $attr .= tag::$selfClosingMarker ? " $k=\"$k\"" : " $k";
+                   $attr .= self::$selfClosingMarker ? " $k=\"$k\"" : " $k";
                 }
             } else {
-                $attr .= sprintf(' %s="%s"', $k, tag::escape($v));
+                $attr .= sprintf(' %s="%s"', $k, self::escape($v));
             }
         }
 
         # flatten content
-        $args = tag::flatten($args);
+        $args = self::flatten($args);
 
         # escape tag content
         foreach ($args as &$c) {
-            if (! $c instanceof tag) {
-                $c = tag::escape($c);
+            if (! $c instanceof Tag) {
+                $c = self::escape($c);
             }
         }
 
@@ -57,18 +57,18 @@ final class tag
             $tag = '</' . substr($name, 4) .'>';
         } else if (0 === strpos($name, 'begin_')) {
             $tag = '<' . substr($name, 6) . $attr . '>';
-        } else if (in_array($name, tag::$voidElements)) {
-            $tag = "<$name$attr" . tag::$selfClosingMarker . ">";
+        } else if (in_array($name, self::$voidElements)) {
+            $tag = "<$name$attr" . self::$selfClosingMarker . ">";
         } else {
             $tag = "<$name$attr>" . implode(' ', $args) . "</$name>";
         }
 
-        return new tag($this->value . $tag);
+        return new Tag($this->value . $tag);
     }
 
     private static function escape($string)
     {
-        return htmlspecialchars($string, ENT_COMPAT, tag::$encoding);
+        return htmlspecialchars($string, ENT_COMPAT, Tag::$encoding);
     }
     
     private static function flatten($array)

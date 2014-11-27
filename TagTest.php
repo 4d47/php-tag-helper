@@ -5,10 +5,10 @@ class TagTest extends PHPUnit_Framework_TestCase
 {
     public function testConstructWithOptionalStringArgument()
     {
-        $this->assertEquals('', new tag());
-        $this->assertEquals('a', new tag('a'));
-        $this->assertEquals('<unescaped>', new tag('<unescaped>'));
-        $this->assertEquals('foo', new tag(new tag('foo')));
+        $this->assertEquals('', new Tag());
+        $this->assertEquals('a', new Tag('a'));
+        $this->assertEquals('<unescaped>', new Tag('<unescaped>'));
+        $this->assertEquals('foo', new Tag(new Tag('foo')));
     }
 
     public function testAcceptsAnyMethodsWithAnyNumberOfArguments()
@@ -62,55 +62,55 @@ class TagTest extends PHPUnit_Framework_TestCase
 
     public function testStaticCallFrontend()
     {
-        $this->assertEquals('<b>hello</b>', tag::b('hello'));
-        $this->assertEquals('<form action="." method="POST">', tag::begin_form(array('action' => '.', 'method' => 'POST')));
+        $this->assertEquals('<b>hello</b>', Tag::b('hello'));
+        $this->assertEquals('<form action="." method="POST">', Tag::begin_form(array('action' => '.', 'method' => 'POST')));
     }
 
     public function testVoidElementsOption()
     {
-        $this->assertEquals('<p></p>', tag::p());
-        tag::$voidElements[] = 'p';
-        $this->assertEquals('<p>', tag::p());
+        $this->assertEquals('<p></p>', Tag::p());
+        Tag::$voidElements[] = 'p';
+        $this->assertEquals('<p>', Tag::p());
     }
 
     public function testSelfClosingMarkerOption()
     {
-        tag::$selfClosingMarker = ' /'; # going back to the xhtml days
-        $this->assertEquals('<br />', tag::br());
-        $this->assertEquals('<img src="a.jpg" />', tag::img(array('src' => 'a.jpg')));
-        $this->assertEquals('<p></p>', tag::p());
+        Tag::$selfClosingMarker = ' /'; # going back to the xhtml days
+        $this->assertEquals('<br />', Tag::br());
+        $this->assertEquals('<img src="a.jpg" />', Tag::img(array('src' => 'a.jpg')));
+        $this->assertEquals('<p></p>', Tag::p());
     }
 
     public function testBooleanAttributesOption()
     {
-        $this->assertEquals('<input disabled>', tag::input(array('disabled' => true)));
-        $this->assertEquals('<input a="1">', tag::input(array('a' => true)));
-        tag::$booleanAttributes[] = 'a';
-        $this->assertEquals('<input a>', tag::input(array('a' => true)));
-        tag::$selfClosingMarker = ' /';
-        $this->assertEquals('<input disabled="disabled" />', tag::input(array('disabled' => true)));
+        $this->assertEquals('<input disabled>', Tag::input(array('disabled' => true)));
+        $this->assertEquals('<input a="1">', Tag::input(array('a' => true)));
+        Tag::$booleanAttributes[] = 'a';
+        $this->assertEquals('<input a>', Tag::input(array('a' => true)));
+        Tag::$selfClosingMarker = ' /';
+        $this->assertEquals('<input disabled="disabled" />', Tag::input(array('disabled' => true)));
     }
 
     public function testArrayContentIsFlatten()
     {
         $data = array('a', 'b', 'c');
         $this->assertEquals('<ul id="abc"><li>a</li> <li>b</li> <li>c</li></ul>',
-            tag::ul(array('id' => 'abc'), array_map(array('tag', 'li'), $data)));
+            Tag::ul(array('id' => 'abc'), array_map(array('tag', 'li'), $data)));
     }
 
     public function setUp()
     {
-        $this->tag = new tag();
-        tag::$selfClosingMarker = self::$defaultSelfClosingMarker;
-        tag::$voidElements = self::$defaultVoidElements;
-        tag::$booleanAttributes = self::$defaultBooleanAttributes;
+        $this->tag = new Tag();
+        Tag::$selfClosingMarker = self::$defaultSelfClosingMarker;
+        Tag::$voidElements = self::$defaultVoidElements;
+        Tag::$booleanAttributes = self::$defaultBooleanAttributes;
     }
 
     public static function setUpBeforeClass()
     {
-        self::$defaultSelfClosingMarker = tag::$selfClosingMarker;
-        self::$defaultVoidElements = tag::$voidElements;
-        self::$defaultBooleanAttributes = tag::$booleanAttributes;
+        self::$defaultSelfClosingMarker = Tag::$selfClosingMarker;
+        self::$defaultVoidElements = Tag::$voidElements;
+        self::$defaultBooleanAttributes = Tag::$booleanAttributes;
     }
 
     private static $defaultSelfClosingMarker;
