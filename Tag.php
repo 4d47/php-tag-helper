@@ -73,7 +73,7 @@ final class Tag
     
     private static function flatten($array)
     {
-        return array_reduce($array, array('tag', 'flat'), array());
+        return array_reduce($array, 'self::flat', array());
     }
 
     private static function flat(&$result, $item)
